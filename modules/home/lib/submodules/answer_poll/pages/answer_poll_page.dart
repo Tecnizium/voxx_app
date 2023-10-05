@@ -29,7 +29,7 @@ class _AnswerPollPageState extends State<AnswerPollPage> {
                 builder: (context) => Container());
 
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              duration: const Duration(seconds: 10),
+              duration: const Duration(seconds: 15),
               content: Row(
                 children: [
                   CircularProgressIndicator(
@@ -55,7 +55,7 @@ class _AnswerPollPageState extends State<AnswerPollPage> {
                 'Poll answered successfully',
                 style: AppTextTheme.kBody1(color: AppColors.kWhite),
               ),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.kGreen,
             ));
             context.pop();
             break;

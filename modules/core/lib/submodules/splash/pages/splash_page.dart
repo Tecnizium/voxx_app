@@ -19,7 +19,7 @@ class _SplashPageState extends State<SplashPage> {
       listener: (context, state) {
         switch (state.runtimeType) {
           case RedirectLogin:
-            context.go(AppRoutes.login.path);
+            context.goNamed(AppRoutesName.signIn);
             break;
           case RedirectHome:
             context.go(AppRoutes.home.path, extra: (state as RedirectHome).user);

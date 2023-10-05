@@ -1,13 +1,16 @@
 import 'package:commons/commons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class LoginTextFormField extends StatefulWidget {
   const LoginTextFormField({super.key,
+  this.inputFormatters,
   required this.labelText, required this.controller, this.isPassword = false
   });
 
   final String labelText;
   final TextEditingController controller;
+  final List<TextInputFormatter>? inputFormatters;
   final bool isPassword;
 
   @override
@@ -27,6 +30,7 @@ class _LoginTextFormFieldState extends State<LoginTextFormField> {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: widget.controller,
+      inputFormatters: widget.inputFormatters,
       obscureText: obscureText!,
       style: AppTextTheme.kBody1(
           color: AppColors.kBlack, fontWeight: FontWeight.normal),

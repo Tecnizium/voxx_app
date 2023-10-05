@@ -62,7 +62,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
                 'User updated successfully',
                 style: AppTextTheme.kBody1(color: AppColors.kWhite),
               ),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.kGreen,
             ));
             break;
           case MyAccountFailure:
@@ -101,7 +101,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
                             width: 20,
                           ),
                           Text(
-                            widget.user.firstName!,
+                            widget.user.firstName ?? widget.user.username ?? '',
                             style:
                                 AppTextTheme.kTitle3(color: AppColors.kWhite),
                           )
@@ -122,7 +122,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
                     title: 'Logout',
                     onTap: () {
                       context.read<HomeBloc>().add(LogoutEvent());
-                      context.goNamed(AppRoutesName.login);
+                      context.goNamed(AppRoutesName.signIn);
                     },
                   )
                 ],
@@ -132,81 +132,85 @@ class _MyAccountPageState extends State<MyAccountPage> {
               iconTheme: IconThemeData(color: AppColors.kWhite, size: 30),
               backgroundColor: AppColors.kBlue,
             ),
-            body: SingleChildScrollView(
-              child: Center(
-                child: Container(
-                  margin: EdgeInsets.only(top: 20),
-                  padding: const EdgeInsets.all(20),
-                  width: _size.width * 0.9,
-                  height: _size.height * 0.85,
-                  decoration: BoxDecoration(
-                      color: AppColors.kWhite,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 125,
-                        height: 125,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.kBlack)),
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      MyAccountTextFormField(
-                        controller: firstNameController,
-                        labelText: 'First Name',
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      MyAccountTextFormField(
-                        controller: lastNameController,
-                        labelText: 'Last Name',
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      MyAccountTextFormField(
-                        controller: emailController,
-                        labelText: 'Email',
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      MyAccountTextFormField(
-                        controller: passwordController,
-                        labelText: 'Password',
-                        isPassword: true,
-                      ),
-                      const Spacer(),
-                      Container(
-                          alignment: Alignment.bottomCenter,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              context.read<MyAccountBloc>().add(
-                                  SaveButtonPressed(
-                                      user: UserModel(
-                                          id: widget.user.id,
-                                          username: widget.user.username,
-                                          firstName: firstNameController.text,
-                                          lastName: lastNameController.text,
-                                          email: emailController.text,
-                                          password: passwordController.text,
-                                          role: widget.user.role)));
-                            },
-                            style: ElevatedButton.styleFrom(
-                                minimumSize: Size(_size.width * 0.3, 40),
-                                backgroundColor: AppColors.kBlue,
-                                elevation: 0),
-                            child: Text(
-                              'Save',
-                              style:
-                                  AppTextTheme.kBody1(color: AppColors.kWhite),
-                            ),
-                          )),
-                    ],
+            body: SizedBox(
+              width: _size.width,
+              height: _size.height,
+              child: SingleChildScrollView(
+                child: Center(
+                  child: Container(
+                    margin: EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.all(20),
+                    width: _size.width * 0.9,
+                    height: _size.height * 0.8,
+                    decoration: BoxDecoration(
+                        color: AppColors.kWhite,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 125,
+                          height: 125,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: AppColors.kBlack)),
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        MyAccountTextFormField(
+                          controller: firstNameController,
+                          labelText: 'First Name',
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        MyAccountTextFormField(
+                          controller: lastNameController,
+                          labelText: 'Last Name',
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        MyAccountTextFormField(
+                          controller: emailController,
+                          labelText: 'Email',
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        MyAccountTextFormField(
+                          controller: passwordController,
+                          labelText: 'Password',
+                          isPassword: true,
+                        ),
+                        const Spacer(),
+                        Container(
+                            alignment: Alignment.bottomCenter,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                context.read<MyAccountBloc>().add(
+                                    SaveButtonPressed(
+                                        user: UserModel(
+                                            id: widget.user.id,
+                                            username: widget.user.username,
+                                            firstName: firstNameController.text,
+                                            lastName: lastNameController.text,
+                                            email: emailController.text,
+                                            password: passwordController.text,
+                                            role: widget.user.role)));
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(_size.width * 0.3, 40),
+                                  backgroundColor: AppColors.kBlue,
+                                  elevation: 0),
+                              child: Text(
+                                'Save',
+                                style:
+                                    AppTextTheme.kBody1(color: AppColors.kWhite),
+                              ),
+                            )),
+                      ],
+                    ),
                   ),
                 ),
               ),

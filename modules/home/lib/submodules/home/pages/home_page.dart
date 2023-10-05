@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
                   title: 'Logout',
                   onTap: () {
                     context.read<HomeBloc>().add(LogoutEvent());
-                    context.go(AppRoutes.login.path);
+                    context.goNamed(AppRoutesName.signIn);
                   },
                 )
               ],

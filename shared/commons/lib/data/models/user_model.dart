@@ -10,16 +10,17 @@ class UserModel {
   int? role;
 
   UserModel({
-    required this.id,
+    this.id,
     required this.username,
-    required this.firstName,
-    required this.lastName,
+    this.firstName,
+    this.lastName,
     required this.email,
     required this.role,
     this.password,
   });
 
-  factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source));
+  factory UserModel.fromJson(String source) =>
+      UserModel.fromMap(json.decode(source));
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
@@ -35,7 +36,6 @@ class UserModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'username': username,
       'userAuth': {
         'email': email,
@@ -48,6 +48,4 @@ class UserModel {
       }
     };
   }
-  
-
 }

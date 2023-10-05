@@ -20,7 +20,7 @@ abstract class AppRoutes {
         ),
       );
 
-  static List<GoRoute> get routes => [splash, login, home, profile];
+  static List<GoRoute> get routes => [splash, signIn, signUp, home, profile];
 
   static GoRoute get splash => GoRoute(
         path: AppRoutesPath.splash,
@@ -33,14 +33,25 @@ abstract class AppRoutes {
         ),
       );
 
-  static GoRoute get login => GoRoute(
-        path: AppRoutesPath.login,
-        name: AppRoutesName.login,
+  static GoRoute get signIn => GoRoute(
+        path: AppRoutesPath.signIn,
+        name: AppRoutesName.signIn,
         builder: (context, state) => BlocProvider(
           create: (context) => SignInBloc(
               loginApiProvider: LoginApiProvider(),
               cacheProvider: CacheProvider()),
-          child: const LoginPage(),
+          child: const SignInPage(),
+        ),
+      );
+
+  static GoRoute get signUp => GoRoute(
+        path: AppRoutesPath.signUp,
+        name: AppRoutesName.signUp,
+        builder: (context, state) => BlocProvider(
+          create: (context) => SignUpBloc(
+              loginApiProvider: LoginApiProvider(),
+              cacheProvider: CacheProvider()),
+          child: const SignUpPage(),
         ),
       );
   static GoRoute get home => GoRoute(

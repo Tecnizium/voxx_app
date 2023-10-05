@@ -8,3 +8,4 @@ export 'package:dio/dio.dart';
 export 'package:shared_preferences/shared_preferences.dart';
 export 'package:intl/intl.dart';
 export 'package:shimmer/shimmer.dart';
+export 'package:brasil_fields/brasil_fields.dart';

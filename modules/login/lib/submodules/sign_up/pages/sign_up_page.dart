@@ -2,29 +2,39 @@ import 'package:commons/commons.dart';
 import 'package:commons_dependencies/commons_dependencies.dart';
 import 'package:core/routes/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../widgets/login_text_form_field_widget.dart';
-import '../bloc/sign_in_bloc.dart';
+import '../bloc/sign_up_bloc.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpPageState extends State<SignUpPage> {
   Size get _size => MediaQuery.of(context).size;
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  late TextEditingController _usernameController;
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+
+  @override
+  void initState() {
+    _usernameController = TextEditingController();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SignInBloc, SignInState>(
-      bloc: context.read<SignInBloc>(),
+    return BlocConsumer<SignUpBloc, SignUpState>(
+      bloc: context.read<SignUpBloc>(),
       listener: (context, state) {
         switch (state.runtimeType) {
-          case SignInLoading:
+          case SignUpLoading:
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             showDialog(
                 barrierColor: Colors.transparent,
@@ -50,18 +60,24 @@ class _LoginPageState extends State<LoginPage> {
               backgroundColor: AppColors.kBlue,
             ));
             break;
-          case SignInSuccess:
-            context.pop();
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            context.goNamed(AppRoutesName.home,
-                extra: (state as SignInSuccess).user);
-            break;
-          case SignInError:
+          case SignUpSuccess:
             context.pop();
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text(
-                (state as SignInError).message,
+                'Sign up success',
+                style: AppTextTheme.kBody1(color: AppColors.kWhite),
+              ),
+              backgroundColor: AppColors.kGreen,
+            ));
+            context.goNamed(AppRoutesName.signIn);
+            break;
+          case SignUpError:
+            context.pop();
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+                (state as SignUpError).message,
                 style: AppTextTheme.kBody1(color: AppColors.kWhite),
               ),
               backgroundColor: AppColors.kRed,
@@ -74,7 +90,6 @@ class _LoginPageState extends State<LoginPage> {
         return Scaffold(
           backgroundColor: AppColors.kLightBlue3,
           body: SingleChildScrollView(
-            physics: const NeverScrollableScrollPhysics(),
             child: Stack(
               children: [
                 Positioned(
@@ -98,17 +113,29 @@ class _LoginPageState extends State<LoginPage> {
                       Container(
                         alignment: Alignment.centerLeft,
                         height: _size.height * 0.4,
-                        child: Text('Welcome\nBack',
+                        child: Text('Create\nan account',
                             style: AppTextTheme.kTitle1(
                                 color: AppColors.kWhite,
                                 fontWeight: FontWeight.w600)),
                       ),
                       Column(
                         children: [
+                           LoginTextFormField(
+                            labelText: 'CPF',
+                            controller: _usernameController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              CpfInputFormatter(),
+                            ],
+                            //onChanged: (value) => context.read<SignUpBloc>().add(LoginEmailChangedEvent(value)),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
                           LoginTextFormField(
                             labelText: 'Your Email',
                             controller: _emailController,
-                            //onChanged: (value) => context.read<SignInBloc>().add(LoginEmailChangedEvent(value)),
+                            //onChanged: (value) => context.read<SignUpBloc>().add(LoginEmailChangedEvent(value)),
                           ),
                           const SizedBox(
                             height: 10,
@@ -117,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                             labelText: 'Password',
                             isPassword: true,
                             controller: _passwordController,
-                            //onChanged: (value) => context.read<SignInBloc>().add(LoginPasswordChangedEvent(value)),
+                            //onChanged: (value) => context.read<SignUpBloc>().add(LoginPasswordChangedEvent(value)),
                           ),
                           const SizedBox(
                             height: 30,
@@ -127,14 +154,15 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Sign in',
+                                'Sign up',
                                 style: AppTextTheme.kTitle2(
                                     color: AppColors.kBlack),
                               ),
                               IconButton.filled(
                                 onPressed: () {
-                                  context.read<SignInBloc>().add(
-                                      SignInButtonPressed(
+                                  context.read<SignUpBloc>().add(
+                                      SignUpButtonPressed(
+                                          username: _usernameController.text,
                                           email: _emailController.text,
                                           password: _passwordController.text));
                                 },
@@ -152,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Container(
                           alignment: Alignment.bottomCenter,
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Stack(
                                 children: [
@@ -164,26 +192,15 @@ class _LoginPageState extends State<LoginPage> {
                                       color: AppColors.kBlue.withOpacity(0.5),
                                     ),
                                   ),
-                                  Text('Sign Up',
-                                      style: AppTextTheme.kBody2(
-                                          color: AppColors.kBlack,
-                                          fontWeight: FontWeight.w600)),
-                                ],
-                              ),
-                              Stack(
-                                children: [
-                                  Positioned(
-                                    bottom: 1,
-                                    child: Container(
-                                      width: 150,
-                                      height: 6,
-                                      color: AppColors.kRed.withOpacity(0.5),
-                                    ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      context.goNamed(AppRoutesName.signIn);
+                                    },
+                                    child: Text('Sign In',
+                                        style: AppTextTheme.kBody2(
+                                            color: AppColors.kBlack,
+                                            fontWeight: FontWeight.w600)),
                                   ),
-                                  Text('Forgot Password ?',
-                                      style: AppTextTheme.kBody2(
-                                          color: AppColors.kBlack,
-                                          fontWeight: FontWeight.w600)),
                                 ],
                               ),
                             ],
