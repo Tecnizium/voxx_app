@@ -32,21 +32,56 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       },
     );
 
+    on<GetAnswersCacheEvent>(
+      (event, emit) async {
+        final answers = await _cacheProvider.answers;
+        emit(AnswersCacheLoadedState(answers: answers));
+      },
+    );
+
     on<UpdateCampaignButtonPressed>((event, emit) async {
       await _cacheProvider.setCampaignId(event.campaignId);
       emit(CampaignCacheLoadedState(campaignId: event.campaignId));
     });
 
     on<GetPollsEvent>((event, emit) async {
-      emit(HomeLoading());
-      final jwtToken = await _cacheProvider.jwtToken;
-      final response = await _homeApiProvider.getPollsByCampaignId(event.campaignId, jwtToken);
-      if (response.statusCode == 200) {
-        final polls = response.data.map<PollModel>((e) => PollModel.fromMap(e)).toList();
-        emit(PollsLoadedState(polls: polls));
+      final connectivityResult = await (Connectivity().checkConnectivity());
+      final lastUpdate = await _cacheProvider.lastUpdate;
+      final now = DateTime.now();
+
+      if ((now.difference(lastUpdate).inMinutes > 5 &&
+          connectivityResult == ConnectivityResult.wifi ||
+          connectivityResult == ConnectivityResult.mobile) || event.forceUpdate) {
+        emit(HomeLoading());
+        final jwtToken = await _cacheProvider.jwtToken;
+        final response = await _homeApiProvider.getPollsByCampaignId(
+            event.campaignId, jwtToken);
+        if (response.statusCode == 200) {
+          final polls = response.data
+              .map<PollModel>((e) => PollModel.fromMap(e))
+              .toList();
+          await _cacheProvider.setPolls(polls);
+          await _cacheProvider.setLastUpdate(now);
+          emit(PollsLoadedState(polls: polls));
+        } else {
+          emit(PollsLoadedState(polls: const []));
+        }
       } else {
-        emit(PollsLoadedState(polls: const []));
+        final polls = await _cacheProvider.polls;
+        emit(PollsLoadedState(polls: polls));
       }
+    });
+
+    on<UploadButtonPressed>((event, emit) async {
+      final jwtToken = await _cacheProvider.jwtToken;
+      for (var answer in event.answers) {
+        try {
+          final response =
+              await _homeApiProvider.sendAnswersPoll(answer, jwtToken);
+        } catch (e) {}
+      }
+
+      await _cacheProvider.clearAnswers();
     });
   }
 }

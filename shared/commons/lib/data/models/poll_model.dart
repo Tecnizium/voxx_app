@@ -50,8 +50,8 @@ class PollModel {
       'campaignId': campaignId,
       'title': title,
       'description': description,
-      'startDate': startDate,
-      'endDate': endDate,
+      'startDate': startDate.toString(),
+      'endDate': endDate.toString(),
       'status': status,
       'questions': questions.map((question) => question.toJson()).toList()
     };

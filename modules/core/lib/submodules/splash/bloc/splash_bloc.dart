@@ -23,6 +23,11 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
       if (jwtToken.isNotEmpty) {
         print(jwtToken);
         print(user.toJson());
+         final connectivityResult = await (Connectivity().checkConnectivity());
+        if (connectivityResult == ConnectivityResult.wifi ||
+            connectivityResult == ConnectivityResult.mobile) {
+       
+
         final response = await _coreApiProvider.checkJwtToken(jwtToken);
         if (response.statusCode == 200) {
           final user = UserModel.fromMap(response.data);
@@ -30,6 +35,8 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
           emit(RedirectHome(user: user));
         } else {
           emit(RedirectLogin());
+        }} else {
+          emit(RedirectHome(user: user));
         }
       } else {
         emit(RedirectLogin());

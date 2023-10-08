@@ -17,6 +17,7 @@ class _HomePageState extends State<HomePage> {
   Size get _size => MediaQuery.of(context).size;
   late UserModel? userCache = widget.user;
   String? campaignId;
+  List<AnswersModel>? answers;
   TextEditingController campaignNameController = TextEditingController();
   List<PollModel> polls = [];
 
@@ -36,7 +37,12 @@ class _HomePageState extends State<HomePage> {
             });
             context
                 .read<HomeBloc>()
-                .add(GetPollsEvent(campaignId: campaignId!));
+                .add(GetPollsEvent(campaignId: campaignId!, forceUpdate: true));
+            break;
+          case AnswersCacheLoadedState:
+            setState(() {
+              answers = (state as AnswersCacheLoadedState).answers;
+            });
             break;
           case PollsLoadedState:
             setState(() {
@@ -52,6 +58,9 @@ class _HomePageState extends State<HomePage> {
         }
         if (campaignId == null) {
           context.read<HomeBloc>().add(GetCampaignCacheEvent());
+        }
+        if (answers == null) {
+          context.read<HomeBloc>().add(GetAnswersCacheEvent());
         }
         return Scaffold(
           backgroundColor: AppColors.kLightBlue3,
@@ -84,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                   selected: true,
                 ),
                 HomeListTile(
-                  title: 'Settings',
+                  title: 'Profile',
                   onTap: () {
                     context.goNamed(AppRoutesName.profile, extra: userCache);
                   },
@@ -101,9 +110,19 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           appBar: AppBar(
-            iconTheme: IconThemeData(color: AppColors.kWhite, size: 30),
-            backgroundColor: AppColors.kBlue,
-          ),
+              iconTheme: IconThemeData(color: AppColors.kWhite, size: 30),
+              backgroundColor: AppColors.kBlue,
+              actions: [
+                answers == null || answers!.isEmpty
+                    ? const SizedBox()
+                    : IconButton(
+                        onPressed: () {
+                          context
+                              .read<HomeBloc>()
+                              .add(UploadButtonPressed(answers: answers!));
+                        },
+                        icon: Badge.count(count: answers!.length, child: Icon(Icons.cloud_upload_outlined)))
+              ]),
           body: SingleChildScrollView(
               child: Padding(
             padding: const EdgeInsets.all(20.0),
@@ -209,33 +228,36 @@ class _HomePageState extends State<HomePage> {
                             )
                         ],
                       )
-                    : polls.isEmpty ? SizedBox(
-                      height: _size.height * 0.5,
-                      child: Center(
-                        child: Text(
-                          'No polls found!',
-                          style: AppTextTheme.kTitle3(color: AppColors.kBlack),
-                        ),
-                      ),
-                    ) : ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: polls.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            margin: const EdgeInsets.symmetric(vertical: 5),
-                            child: GestureDetector(
-                                onTap: () => context.goNamed('answer-poll',
-                                    extra: polls[index]),
-                                child: PollCardListItemWidget(
-                                    size: _size,
-                                    title: polls[index].title,
-                                    description: polls[index].description,
-                                    date: DateFormat('dd/MM/yyyy')
-                                        .format(polls[index].startDate!)
-                                        .toString())),
-                          );
-                        }),
+                    : polls.isEmpty
+                        ? SizedBox(
+                            height: _size.height * 0.5,
+                            child: Center(
+                              child: Text(
+                                'No polls found!',
+                                style: AppTextTheme.kTitle3(
+                                    color: AppColors.kBlack),
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: polls.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                margin: const EdgeInsets.symmetric(vertical: 5),
+                                child: GestureDetector(
+                                    onTap: () => context.goNamed('answer-poll',
+                                        extra: polls[index]),
+                                    child: PollCardListItemWidget(
+                                        size: _size,
+                                        title: polls[index].title,
+                                        description: polls[index].description,
+                                        date: DateFormat('dd/MM/yyyy')
+                                            .format(polls[index].startDate!)
+                                            .toString())),
+                              );
+                            }),
               ],
             ),
           )),

@@ -8,4 +8,8 @@ export 'package:dio/dio.dart';
 export 'package:shared_preferences/shared_preferences.dart';
 export 'package:intl/intl.dart';
 export 'package:shimmer/shimmer.dart';
+<<<<<<< Updated upstream
 export 'package:brasil_fields/brasil_fields.dart';
+=======
+export 'package:connectivity_plus/connectivity_plus.dart';
+>>>>>>> Stashed changes

@@ -18,7 +18,11 @@ dependencies:
   shared_preferences: ^2.2.1
   intl: ^0.18.1
   shimmer: ^3.0.0
+<<<<<<< Updated upstream
   brasil_fields: ^1.14.0
+=======
+  connectivity_plus: ^4.0.2
+>>>>>>> Stashed changes
 
 dev_dependencies:
   flutter_test:

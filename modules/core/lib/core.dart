@@ -19,6 +19,7 @@ class VoxxApp extends StatelessWidget {
         colorSchemeSeed: AppColors.kBlue,
         useMaterial3: true
       ),
+      debugShowCheckedModeBanner: false,
       routerConfig: AppRoutes.router,
     );
   }

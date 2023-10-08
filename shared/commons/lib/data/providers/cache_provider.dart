@@ -16,4 +16,16 @@ class CacheProvider {
   Future<String> get campaignId async => (await prefs).getString('campaignId') ?? '';
   Future<void> setCampaignId(String value) async => (await prefs).setString('campaignId', value);
 
+  Future<List<AnswersModel>> get answers async => (jsonDecode((await prefs).getString('answers') ?? '[]') as List).map((e) => AnswersModel.fromMap(e)).toList();
+  Future<void> setAnswers(List<AnswersModel> value) async => (await prefs).setString('answers', jsonEncode(value.map((e) => e.toJson()).toList()));
+  Future<void> clearAnswers() async => (await prefs).remove('answers');
+
+  Future<List<PollModel>> get polls async => (jsonDecode((await prefs).getString('polls') ?? '[]') as List).map((e) => PollModel.fromMap(e)).toList();
+  Future<void> setPolls(List<PollModel> value) async => (await prefs).setString('polls', jsonEncode(value.map((e) => e.toJson()).toList()));
+  Future<void> clearPolls() async => (await prefs).remove('polls');
+
+  Future<DateTime> get lastUpdate async => DateTime.parse((await prefs).getString('lastUpdate') ?? DateTime.now().toIso8601String());
+  Future<void> setLastUpdate(DateTime value) async => (await prefs).setString('lastUpdate', value.toIso8601String());
+
+
 }

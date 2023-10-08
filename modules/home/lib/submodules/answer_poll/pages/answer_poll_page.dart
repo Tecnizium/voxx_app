@@ -210,8 +210,9 @@ class _AnswerPollPageItemWidgetState extends State<AnswerPollPageItemWidget> {
                     widget.index != 0
                         ? ElevatedButton(
                             onPressed: () {
-                              context.read<AnswerPollBloc>().add(
-                                  BackButtonPressed());
+                              context
+                                  .read<AnswerPollBloc>()
+                                  .add(BackButtonPressed());
                               widget._pageController.previousPage(
                                   duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeIn);

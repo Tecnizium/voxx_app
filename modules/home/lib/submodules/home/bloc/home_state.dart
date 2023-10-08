@@ -21,6 +21,13 @@ final class CampaignCacheLoadedState extends HomeState {
     });
 }
 
+final class AnswersCacheLoadedState extends HomeState {
+  final List<AnswersModel> answers;
+  AnswersCacheLoadedState({
+    required this.answers,
+    });
+}
+
 final class PollsLoadedState extends HomeState {
   final List<PollModel> polls;
   PollsLoadedState({
