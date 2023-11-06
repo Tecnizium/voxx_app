@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:commons/commons.dart';
 import 'package:commons_dependencies/commons_dependencies.dart';
@@ -49,9 +51,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final lastUpdate = await _cacheProvider.lastUpdate;
       final now = DateTime.now();
 
-      if ((now.difference(lastUpdate).inMinutes > 5 &&
-          connectivityResult == ConnectivityResult.wifi ||
-          connectivityResult == ConnectivityResult.mobile) || event.forceUpdate) {
+      if ((now.difference(lastUpdate).inMinutes > 5 || event.forceUpdate) &&
+          (connectivityResult == ConnectivityResult.wifi ||
+              connectivityResult == ConnectivityResult.mobile)) {
         emit(HomeLoading());
         final jwtToken = await _cacheProvider.jwtToken;
         final response = await _homeApiProvider.getPollsByCampaignId(
@@ -73,15 +75,38 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     });
 
     on<UploadButtonPressed>((event, emit) async {
+      final connectivityResult = await (Connectivity().checkConnectivity());
       final jwtToken = await _cacheProvider.jwtToken;
-      for (var answer in event.answers) {
-        try {
-          final response =
-              await _homeApiProvider.sendAnswersPoll(answer, jwtToken);
-        } catch (e) {}
-      }
+      List<AnswersModel> answers = event.answers;
+      try {
+        if (connectivityResult == ConnectivityResult.wifi ||
+            connectivityResult == ConnectivityResult.mobile) {
+          emit(UploadAnswersLoadingState());
 
-      await _cacheProvider.clearAnswers();
+          for (var i = answers.length; 0 < i; i--) {
+            final answer = answers[i - 1];
+            final response =
+                await _homeApiProvider.sendAnswersPoll(answer, jwtToken);
+            if (response.statusCode == 200) {
+              answers.removeLast();
+            } else {
+              await _cacheProvider.setAnswers(answers);
+              emit(UploadAnswersErrorState(
+                  message: 'No internet connection', answers: answers));
+              return;
+            }
+          }
+          await _cacheProvider.clearAnswers();
+          emit(UploadAnswersUploadedState(answers: const []));
+        } else {
+          emit(UploadAnswersErrorState(
+              message: 'No internet connection', answers: answers));
+          return;
+        }
+      } catch (e) {
+        await _cacheProvider.setAnswers(answers);
+        emit(UploadAnswersUploadedState(answers: answers));
+      }
     });
   }
 }

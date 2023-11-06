@@ -17,7 +17,7 @@ class OptionModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'value': text
+      'text': text
     };
   }
 }

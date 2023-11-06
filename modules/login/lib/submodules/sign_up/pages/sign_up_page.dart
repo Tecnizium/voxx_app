@@ -36,52 +36,20 @@ class _SignUpPageState extends State<SignUpPage> {
         switch (state.runtimeType) {
           case SignUpLoading:
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            showDialog(
-                barrierColor: Colors.transparent,
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => Container());
-
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Row(
-                children: [
-                  CircularProgressIndicator(
-                    color: AppColors.kWhite,
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    'Loading...',
-                    style: AppTextTheme.kBody1(color: AppColors.kWhite),
-                  ),
-                ],
-              ),
-              backgroundColor: AppColors.kBlue,
-            ));
+            SnackBarWidget.loadingSnackBar(context);
             break;
           case SignUpSuccess:
             context.pop();
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                'Sign up success',
-                style: AppTextTheme.kBody1(color: AppColors.kWhite),
-              ),
-              backgroundColor: AppColors.kGreen,
-            ));
+            SnackBarWidget.successSnackBar(context, 'Sign up success');
             context.goNamed(AppRoutesName.signIn);
+
             break;
           case SignUpError:
-            context.pop();
+            context.canPop() ? context.pop() : null;
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                (state as SignUpError).message,
-                style: AppTextTheme.kBody1(color: AppColors.kWhite),
-              ),
-              backgroundColor: AppColors.kRed,
-            ));
+            SnackBarWidget.errorSnackBar(
+                context, (state as SignUpError).message);
             break;
           default:
         }
@@ -120,7 +88,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       Column(
                         children: [
-                           LoginTextFormField(
+                          LoginTextFormField(
                             labelText: 'CPF',
                             controller: _usernameController,
                             inputFormatters: [
@@ -160,11 +128,47 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                               IconButton.filled(
                                 onPressed: () {
-                                  context.read<SignUpBloc>().add(
-                                      SignUpButtonPressed(
-                                          username: _usernameController.text,
-                                          email: _emailController.text,
-                                          password: _passwordController.text));
+                                  if (_usernameController.text.isEmpty) {
+                                    ScaffoldMessenger.of(context)
+                                        .hideCurrentSnackBar();
+                                    SnackBarWidget.errorSnackBar(
+                                        context, 'CPF is required');
+                                  } else if (!cpfValidator(
+                                      _usernameController.text)) {
+                                    ScaffoldMessenger.of(context)
+                                        .hideCurrentSnackBar();
+                                    SnackBarWidget.errorSnackBar(
+                                        context, 'CPF is invalid');
+                                  } else if (_emailController.text.isEmpty) {
+                                    ScaffoldMessenger.of(context)
+                                        .hideCurrentSnackBar();
+                                    SnackBarWidget.errorSnackBar(
+                                        context, 'Email is required');
+                                  } else if (!emailValidator(
+                                      _emailController.text)) {
+                                    ScaffoldMessenger.of(context)
+                                        .hideCurrentSnackBar();
+                                    SnackBarWidget.errorSnackBar(
+                                        context, 'Email is invalid');
+                                  } else if (_passwordController.text.isEmpty) {
+                                    ScaffoldMessenger.of(context)
+                                        .hideCurrentSnackBar();
+                                    SnackBarWidget.errorSnackBar(
+                                        context, 'Password is required');
+                                  } else if (!passwordValidator(
+                                      _passwordController.text)) {
+                                    ScaffoldMessenger.of(context)
+                                        .hideCurrentSnackBar();
+                                    SnackBarWidget.errorSnackBar(
+                                        context, 'Password is invalid');
+                                  } else {
+                                    context.read<SignUpBloc>().add(
+                                        SignUpButtonPressed(
+                                            username: _usernameController.text,
+                                            email: _emailController.text,
+                                            password:
+                                                _passwordController.text));
+                                  }
                                 },
                                 icon: const Icon(Icons.arrow_forward_ios),
                                 color: AppColors.kWhite,

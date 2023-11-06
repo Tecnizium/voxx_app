@@ -22,53 +22,20 @@ class _AnswerPollPageState extends State<AnswerPollPage> {
         switch (state.runtimeType) {
           case AnswerPollLoading:
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            showDialog(
-                barrierColor: Colors.transparent,
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => Container());
-
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              duration: const Duration(seconds: 15),
-              content: Row(
-                children: [
-                  CircularProgressIndicator(
-                    color: AppColors.kWhite,
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    'Loading...',
-                    style: AppTextTheme.kBody1(color: AppColors.kWhite),
-                  ),
-                ],
-              ),
-              backgroundColor: AppColors.kBlue,
-            ));
+            SnackBarWidget.loadingSnackBar(context);
             break;
           case AnswerPollSuccess:
             context.pop();
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                'Poll answered successfully',
-                style: AppTextTheme.kBody1(color: AppColors.kWhite),
-              ),
-              backgroundColor: AppColors.kGreen,
-            ));
-            context.pop();
+            SnackBarWidget.successSnackBar(
+                context, 'Poll answered successfully');
+            context.canPop() ? context.pop() : null;
             break;
           case AnswerPollError:
             context.pop();
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                (state as SignInError).message,
-                style: AppTextTheme.kBody1(color: AppColors.kWhite),
-              ),
-              backgroundColor: AppColors.kRed,
-            ));
+            SnackBarWidget.errorSnackBar(
+                context, (state as SignInError).message,);
             break;
           default:
         }

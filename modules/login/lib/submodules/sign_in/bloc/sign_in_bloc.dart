@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:commons/commons.dart';
+import 'package:commons_dependencies/commons_dependencies.dart';
 import 'package:login/data/providers/login_api_provider.dart';
 import 'package:meta/meta.dart';
 
@@ -17,7 +18,11 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     });
 
     on<SignInButtonPressed>((event, emit) async {
-      emit(SignInLoading());
+      final connectivityResult = await (Connectivity().checkConnectivity());
+
+      if (connectivityResult == ConnectivityResult.wifi ||
+              connectivityResult == ConnectivityResult.mobile) {
+        emit(SignInLoading());
       try {
         final response =
             await _loginApiProvider.signIn(event.email, event.password);
@@ -34,6 +39,10 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
       } catch (e) {
         emit(SignInError(message: e.toString()));
       }
+      }else{
+        emit(SignInError(message: 'No internet connection'));
+      }
+      
     });
   }
 }

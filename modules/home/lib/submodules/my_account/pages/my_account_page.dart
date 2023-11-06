@@ -15,6 +15,8 @@ class MyAccountPage extends StatefulWidget {
 class _MyAccountPageState extends State<MyAccountPage> {
   Size get _size => MediaQuery.of(context).size;
 
+  late UserModel user;
+
   late TextEditingController firstNameController =
       TextEditingController(text: widget.user.firstName);
   late TextEditingController lastNameController =
@@ -24,57 +26,31 @@ class _MyAccountPageState extends State<MyAccountPage> {
   late TextEditingController passwordController = TextEditingController();
 
   @override
+  void initState() {
+    user = widget.user;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<MyAccountBloc, MyAccountState>(
       listener: (context, state) {
         switch (state.runtimeType) {
           case MyAccountLoading:
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            showDialog(
-                barrierColor: Colors.transparent,
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => Container());
-
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Row(
-                children: [
-                  CircularProgressIndicator(
-                    color: AppColors.kWhite,
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    'Loading...',
-                    style: AppTextTheme.kBody1(color: AppColors.kWhite),
-                  ),
-                ],
-              ),
-              backgroundColor: AppColors.kBlue,
-            ));
+            SnackBarWidget.loadingSnackBar(context);
             break;
           case MyAccountSuccess:
             context.pop();
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                'User updated successfully',
-                style: AppTextTheme.kBody1(color: AppColors.kWhite),
-              ),
-              backgroundColor: AppColors.kGreen,
-            ));
+            SnackBarWidget.successSnackBar(
+                context, 'User updated successfully');
+            user = (state as MyAccountSuccess).user;
             break;
           case MyAccountFailure:
             context.pop();
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                'Something went wrong',
-                style: AppTextTheme.kBody1(color: AppColors.kWhite),
-              ),
-              backgroundColor: AppColors.kRed,
-            ));
+            SnackBarWidget.errorSnackBar(context, 'Something went wrong');
             break;
           default:
         }
@@ -101,7 +77,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
                             width: 20,
                           ),
                           Text(
-                            widget.user.firstName ?? widget.user.username ?? '',
+                            user.firstName ?? user.username ?? '',
                             style:
                                 AppTextTheme.kTitle3(color: AppColors.kWhite),
                           )
@@ -110,7 +86,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
                   HomeListTile(
                     title: 'Home',
                     onTap: () {
-                      context.goNamed(AppRoutesName.home, extra: widget.user);
+                      context.goNamed(AppRoutesName.home, extra: user);
                     },
                   ),
                   const HomeListTile(
@@ -188,16 +164,59 @@ class _MyAccountPageState extends State<MyAccountPage> {
                             alignment: Alignment.bottomCenter,
                             child: ElevatedButton(
                               onPressed: () {
-                                context.read<MyAccountBloc>().add(
-                                    SaveButtonPressed(
-                                        user: UserModel(
-                                            id: widget.user.id,
-                                            username: widget.user.username,
-                                            firstName: firstNameController.text,
-                                            lastName: lastNameController.text,
-                                            email: emailController.text,
-                                            password: passwordController.text,
-                                            role: widget.user.role)));
+                                if (firstNameController.text.isEmpty) {
+                                  ScaffoldMessenger.of(context)
+                                      .hideCurrentSnackBar();
+                                  SnackBarWidget.errorSnackBar(
+                                      context, 'First name is empty');
+                                } else if (!nameValidator(
+                                    firstNameController.text)) {
+                                  ScaffoldMessenger.of(context)
+                                      .hideCurrentSnackBar();
+                                  SnackBarWidget.errorSnackBar(
+                                      context, 'First name is invalid');
+                                } else if (lastNameController.text.isEmpty) {
+                                  ScaffoldMessenger.of(context)
+                                      .hideCurrentSnackBar();
+                                  SnackBarWidget.errorSnackBar(
+                                      context, 'Last name is empty');
+                                } else if (!nameValidator(
+                                    lastNameController.text)) {
+                                  ScaffoldMessenger.of(context)
+                                      .hideCurrentSnackBar();
+                                  SnackBarWidget.errorSnackBar(
+                                      context, 'Last name is invalid');
+                                } else if (emailController.text.isEmpty) {
+                                  ScaffoldMessenger.of(context)
+                                      .hideCurrentSnackBar();
+                                  SnackBarWidget.errorSnackBar(
+                                      context, 'Email is empty');
+                                } else if (!emailValidator(
+                                    emailController.text)) {
+                                  ScaffoldMessenger.of(context)
+                                      .hideCurrentSnackBar();
+                                  SnackBarWidget.errorSnackBar(
+                                      context, 'Email is invalid');
+                                } else if (passwordController.text.isNotEmpty &&
+                                    !passwordValidator(
+                                        passwordController.text)) {
+                                  ScaffoldMessenger.of(context)
+                                      .hideCurrentSnackBar();
+                                  SnackBarWidget.errorSnackBar(
+                                      context, 'Password is invalid');
+                                } else {
+                                  context.read<MyAccountBloc>().add(
+                                      SaveButtonPressed(
+                                          user: UserModel(
+                                              id: widget.user.id,
+                                              username: widget.user.username,
+                                              firstName:
+                                                  firstNameController.text,
+                                              lastName: lastNameController.text,
+                                              email: emailController.text,
+                                              password: passwordController.text,
+                                              role: widget.user.role)));
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                   minimumSize: Size(_size.width * 0.3, 40),
@@ -205,8 +224,8 @@ class _MyAccountPageState extends State<MyAccountPage> {
                                   elevation: 0),
                               child: Text(
                                 'Save',
-                                style:
-                                    AppTextTheme.kBody1(color: AppColors.kWhite),
+                                style: AppTextTheme.kBody1(
+                                    color: AppColors.kWhite),
                               ),
                             )),
                       ],

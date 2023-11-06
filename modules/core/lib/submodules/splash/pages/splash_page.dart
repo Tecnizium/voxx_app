@@ -1,3 +1,4 @@
+import 'package:commons/colors/app_colors.dart';
 import 'package:commons_dependencies/commons_dependencies.dart';
 import 'package:core/submodules/splash/bloc/splash_bloc.dart';
 import 'package:core/routes/routes.dart';
@@ -34,18 +35,17 @@ class _SplashPageState extends State<SplashPage> {
         return Stack(
           children: [
             Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF367CFE)
+              decoration:  BoxDecoration(
+                color: AppColors.kBlue,
               ),
             ),
-            Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/logo.png'),
-                  fit: BoxFit.none,
-                ),
-              ),
-            ),
+            Align(
+              alignment: Alignment.center,
+              child: SvgPicture.asset(
+                'assets/images/logo.svg',
+                width: 200,
+                height: 200,
+              )),
             
           ],
         );

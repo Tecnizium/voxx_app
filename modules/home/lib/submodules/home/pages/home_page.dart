@@ -49,6 +49,25 @@ class _HomePageState extends State<HomePage> {
               polls = (state as PollsLoadedState).polls;
             });
             break;
+          case UploadAnswersLoadingState:
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            SnackBarWidget.loadingSnackBar(context);
+            break;
+          case UploadAnswersErrorState:
+            context.canPop() ? context.pop() : null;
+            answers = (state as UploadAnswersErrorState).answers;
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            SnackBarWidget.errorSnackBar(
+                context, (state).message);
+            break;
+          case UploadAnswersUploadedState:
+            context.canPop() ? context.pop() : null;
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            SnackBarWidget.successSnackBar(
+                context, 'Answers uploaded successfully');
+            answers = (state as UploadAnswersUploadedState).answers;
+
+            break;
           default:
         }
       },
@@ -83,7 +102,7 @@ class _HomePageState extends State<HomePage> {
                           width: 20,
                         ),
                         Text(
-                          userCache?.firstName ?? '',
+                          userCache?.firstName ?? userCache?.username ?? '',
                           style: AppTextTheme.kTitle3(color: AppColors.kWhite),
                         )
                       ],
@@ -113,15 +132,18 @@ class _HomePageState extends State<HomePage> {
               iconTheme: IconThemeData(color: AppColors.kWhite, size: 30),
               backgroundColor: AppColors.kBlue,
               actions: [
-                answers == null || answers!.isEmpty
-                    ? const SizedBox()
-                    : IconButton(
-                        onPressed: () {
-                          context
-                              .read<HomeBloc>()
-                              .add(UploadButtonPressed(answers: answers!));
-                        },
-                        icon: Badge.count(count: answers!.length, child: Icon(Icons.cloud_upload_outlined)))
+                if (answers == null || answers!.isEmpty)
+                  const SizedBox()
+                else
+                  IconButton(
+                      onPressed: () {
+                        context
+                            .read<HomeBloc>()
+                            .add(UploadButtonPressed(answers: answers!));
+                      },
+                      icon: Badge.count(
+                          count: answers!.length,
+                          child: const Icon(Icons.cloud_upload_outlined)))
               ]),
           body: SingleChildScrollView(
               child: Padding(
@@ -247,8 +269,12 @@ class _HomePageState extends State<HomePage> {
                               return Container(
                                 margin: const EdgeInsets.symmetric(vertical: 5),
                                 child: GestureDetector(
-                                    onTap: () => context.goNamed('answer-poll',
-                                        extra: polls[index]),
+                                    onTap: () async => await context
+                                        .pushNamed('answer-poll',
+                                            extra: polls[index])
+                                        .then((value) => context
+                                            .read<HomeBloc>()
+                                            .add(GetAnswersCacheEvent())),
                                     child: PollCardListItemWidget(
                                         size: _size,
                                         title: polls[index].title,

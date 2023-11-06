@@ -14,7 +14,7 @@ class LoginApiProvider {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
               'Authorization':
-                  'Basic ${base64Encode(utf8.encode("Ta230P:Scp394"))}'
+                  'Basic ${base64Encode(utf8.encode("tWgR44A4Bs:BpD63GcT8c"))}'
             },
           ),
           data: {'username': username, 'password': base64Encode(utf8.encode(password))});
@@ -32,7 +32,7 @@ class LoginApiProvider {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
               'Authorization':
-                  'Basic ${base64Encode(utf8.encode("Ta230P:Scp394"))}'
+                  'Basic ${base64Encode(utf8.encode("tWgR44A4Bs:BpD63GcT8c"))}'
             },
           ),
           data: user.toJson());

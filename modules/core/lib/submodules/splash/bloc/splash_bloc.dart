@@ -21,8 +21,6 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
       final jwtToken = await _cacheProvider.jwtToken;
       final user = await _cacheProvider.user;
       if (jwtToken.isNotEmpty) {
-        print(jwtToken);
-        print(user.toJson());
          final connectivityResult = await (Connectivity().checkConnectivity());
         if (connectivityResult == ConnectivityResult.wifi ||
             connectivityResult == ConnectivityResult.mobile) {

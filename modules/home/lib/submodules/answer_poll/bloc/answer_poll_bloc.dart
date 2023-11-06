@@ -38,8 +38,6 @@ class AnswerPollBloc extends Bloc<AnswerPollEvent, AnswerPollState> {
     );
 
     on<FinishButtonPressed>((event, emit) async {
-      emit(AnswerPollLoading());
-
       for (var element in event.text) {
         if (element.isNotEmpty) {
           optionSelected.add(OptionSelectedModel(
@@ -52,6 +50,8 @@ class AnswerPollBloc extends Bloc<AnswerPollEvent, AnswerPollState> {
       if (connectivityResult == ConnectivityResult.wifi ||
           connectivityResult == ConnectivityResult.mobile) {
         try {
+          emit(AnswerPollLoading());
+
           final jwtToken = await _cacheProvider.jwtToken;
           final response = await _homeApiProvider.sendAnswersPoll(
               AnswersModel(pollId: event.pollId, answers: optionSelected),

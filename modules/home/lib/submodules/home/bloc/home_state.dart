@@ -28,6 +28,25 @@ final class AnswersCacheLoadedState extends HomeState {
     });
 }
 
+final class UploadAnswersErrorState extends HomeState {
+  final String message;
+  final List<AnswersModel> answers;
+
+  UploadAnswersErrorState({
+    required this.message,
+    required this.answers,
+    });
+}
+
+final class UploadAnswersLoadingState extends HomeState {}
+
+final class UploadAnswersUploadedState extends HomeState {
+  final List<AnswersModel> answers;
+  UploadAnswersUploadedState({
+    required this.answers,
+    });
+}
+
 final class PollsLoadedState extends HomeState {
   final List<PollModel> polls;
   PollsLoadedState({
