@@ -13,3 +13,6 @@ final class MyAccountSuccess extends MyAccountState {
 }
 
 final class MyAccountFailure extends MyAccountState {}
+
+
+final class RedirectToLogin extends MyAccountState {}

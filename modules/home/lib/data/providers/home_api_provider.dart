@@ -22,6 +22,23 @@ class HomeApiProvider {
     }
   }
 
+  Future<Response> deleteUser(String userId, String jwtToken) async {
+    try {
+      return await dio.delete(
+        'https://guardian-gate.kindrock-da55ab0b.eastus.azurecontainerapps.io/User/deleteuser/$userId',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $jwtToken',
+          },
+        ),
+      );
+    }on DioException catch (e) {
+      return e.response ?? Response(requestOptions: RequestOptions(), statusCode: 500);
+    }
+  }
+
   Future<Response> getPollsByCampaignId(String campaignId, String jwtToken) async {
     try {
       return await dio.get(

@@ -112,35 +112,35 @@ class _SignInPageState extends State<SignInPage> {
                               ),
                               IconButton.filled(
                                 onPressed: () {
-                                  if (_emailController.text.isEmpty) {
-                                    ScaffoldMessenger.of(context)
-                                        .hideCurrentSnackBar();
-                                    SnackBarWidget.errorSnackBar(
-                                        context, 'Email is empty');
-                                  } else if (!emailValidator(
-                                      _emailController.text)) {
-                                    ScaffoldMessenger.of(context)
-                                        .hideCurrentSnackBar();
-                                    SnackBarWidget.errorSnackBar(
-                                        context, 'Email is invalid');
-                                  } else if (_passwordController.text.isEmpty) {
-                                    ScaffoldMessenger.of(context)
-                                        .hideCurrentSnackBar();
-                                    SnackBarWidget.errorSnackBar(
-                                        context, 'Password is empty');
-                                  } else if (!passwordValidator(
-                                      _passwordController.text)) {
-                                    ScaffoldMessenger.of(context)
-                                        .hideCurrentSnackBar();
-                                    SnackBarWidget.errorSnackBar(
-                                        context, 'Password is invalid');
-                                  } else {
+                                  //if (_emailController.text.isEmpty) {
+                                  //  ScaffoldMessenger.of(context)
+                                  //      .hideCurrentSnackBar();
+                                  //  SnackBarWidget.errorSnackBar(
+                                  //      context, 'Email is empty');
+                                  //} else if (!emailValidator(
+                                  //    _emailController.text)) {
+                                  //  ScaffoldMessenger.of(context)
+                                  //      .hideCurrentSnackBar();
+                                  //  SnackBarWidget.errorSnackBar(
+                                  //      context, 'Email is invalid');
+                                  //} else if (_passwordController.text.isEmpty) {
+                                  //  ScaffoldMessenger.of(context)
+                                  //      .hideCurrentSnackBar();
+                                  //  SnackBarWidget.errorSnackBar(
+                                  //      context, 'Password is empty');
+                                  //} else if (!passwordValidator(
+                                  //    _passwordController.text)) {
+                                  //  ScaffoldMessenger.of(context)
+                                  //      .hideCurrentSnackBar();
+                                  //  SnackBarWidget.errorSnackBar(
+                                  //      context, 'Password is invalid');
+                                  //} else {
                                     context.read<SignInBloc>().add(
                                         SignInButtonPressed(
                                             email: _emailController.text,
                                             password:
                                                 _passwordController.text));
-                                  }
+                                  //}
                                 },
                                 icon: const Icon(Icons.arrow_forward_ios),
                                 color: AppColors.kWhite,

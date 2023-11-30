@@ -52,6 +52,11 @@ class _MyAccountPageState extends State<MyAccountPage> {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             SnackBarWidget.errorSnackBar(context, 'Something went wrong');
             break;
+          case RedirectToLogin:
+            context.pop();
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            SnackBarWidget.successSnackBar(context, 'User deleted successfully');
+            context.goNamed(AppRoutesName.signIn);
           default:
         }
       },
@@ -108,128 +113,150 @@ class _MyAccountPageState extends State<MyAccountPage> {
               iconTheme: IconThemeData(color: AppColors.kWhite, size: 30),
               backgroundColor: AppColors.kBlue,
             ),
-            body: SizedBox(
-              width: _size.width,
-              height: _size.height,
-              child: SingleChildScrollView(
-                child: Center(
-                  child: Container(
-                    margin: EdgeInsets.only(top: 20),
-                    padding: const EdgeInsets.all(20),
-                    width: _size.width * 0.9,
-                    height: _size.height * 0.8,
-                    decoration: BoxDecoration(
-                        color: AppColors.kWhite,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 125,
-                          height: 125,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.kBlack)),
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        MyAccountTextFormField(
-                          controller: firstNameController,
-                          labelText: 'First Name',
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        MyAccountTextFormField(
-                          controller: lastNameController,
-                          labelText: 'Last Name',
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        MyAccountTextFormField(
-                          controller: emailController,
-                          labelText: 'Email',
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        MyAccountTextFormField(
-                          controller: passwordController,
-                          labelText: 'Password',
-                          isPassword: true,
-                        ),
-                        const Spacer(),
-                        Container(
-                            alignment: Alignment.bottomCenter,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (firstNameController.text.isEmpty) {
-                                  ScaffoldMessenger.of(context)
-                                      .hideCurrentSnackBar();
-                                  SnackBarWidget.errorSnackBar(
-                                      context, 'First name is empty');
-                                } else if (!nameValidator(
-                                    firstNameController.text)) {
-                                  ScaffoldMessenger.of(context)
-                                      .hideCurrentSnackBar();
-                                  SnackBarWidget.errorSnackBar(
-                                      context, 'First name is invalid');
-                                } else if (lastNameController.text.isEmpty) {
-                                  ScaffoldMessenger.of(context)
-                                      .hideCurrentSnackBar();
-                                  SnackBarWidget.errorSnackBar(
-                                      context, 'Last name is empty');
-                                } else if (!nameValidator(
-                                    lastNameController.text)) {
-                                  ScaffoldMessenger.of(context)
-                                      .hideCurrentSnackBar();
-                                  SnackBarWidget.errorSnackBar(
-                                      context, 'Last name is invalid');
-                                } else if (emailController.text.isEmpty) {
-                                  ScaffoldMessenger.of(context)
-                                      .hideCurrentSnackBar();
-                                  SnackBarWidget.errorSnackBar(
-                                      context, 'Email is empty');
-                                } else if (!emailValidator(
-                                    emailController.text)) {
-                                  ScaffoldMessenger.of(context)
-                                      .hideCurrentSnackBar();
-                                  SnackBarWidget.errorSnackBar(
-                                      context, 'Email is invalid');
-                                } else if (passwordController.text.isNotEmpty &&
-                                    !passwordValidator(
-                                        passwordController.text)) {
-                                  ScaffoldMessenger.of(context)
-                                      .hideCurrentSnackBar();
-                                  SnackBarWidget.errorSnackBar(
-                                      context, 'Password is invalid');
-                                } else {
-                                  context.read<MyAccountBloc>().add(
-                                      SaveButtonPressed(
-                                          user: UserModel(
-                                              id: widget.user.id,
-                                              username: widget.user.username,
-                                              firstName:
-                                                  firstNameController.text,
-                                              lastName: lastNameController.text,
-                                              email: emailController.text,
-                                              password: passwordController.text,
-                                              role: widget.user.role)));
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  minimumSize: Size(_size.width * 0.3, 40),
-                                  backgroundColor: AppColors.kBlue,
-                                  elevation: 0),
-                              child: Text(
-                                'Save',
-                                style: AppTextTheme.kBody1(
-                                    color: AppColors.kWhite),
-                              ),
-                            )),
-                      ],
-                    ),
+            body: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: Center(
+                child: Container(
+                  margin: EdgeInsets.all(_size.width * 0.05),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                      color: AppColors.kWhite,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 125,
+                        height: 125,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.kBlack)),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      MyAccountTextFormField(
+                        controller: firstNameController,
+                        labelText: 'First Name',
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      MyAccountTextFormField(
+                        controller: lastNameController,
+                        labelText: 'Last Name',
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      MyAccountTextFormField(
+                        controller: emailController,
+                        labelText: 'Email',
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      MyAccountTextFormField(
+                        controller: passwordController,
+                        labelText: 'Password',
+                        isPassword: true,
+                      ),
+
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              context.read<MyAccountBloc>().add(
+                                  DeleteButtonPressed(
+                                      username: user.username!));
+                            },
+                            style: ElevatedButton.styleFrom(
+                                minimumSize: Size(_size.width * 0.3, 40),
+                                backgroundColor: AppColors.kRed,
+                                elevation: 0),
+                            child: Text(
+                              'Delete',
+                              style: AppTextTheme.kBody1(
+                                  color: AppColors.kWhite),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (firstNameController.text.isEmpty) {
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                SnackBarWidget.errorSnackBar(
+                                    context, 'First name is empty');
+                              } else if (!nameValidator(
+                                  firstNameController.text)) {
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                SnackBarWidget.errorSnackBar(
+                                    context, 'First name is invalid');
+                              } else if (lastNameController
+                                  .text.isEmpty) {
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                SnackBarWidget.errorSnackBar(
+                                    context, 'Last name is empty');
+                              } else if (!nameValidator(
+                                  lastNameController.text)) {
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                SnackBarWidget.errorSnackBar(
+                                    context, 'Last name is invalid');
+                              } else if (emailController.text.isEmpty) {
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                SnackBarWidget.errorSnackBar(
+                                    context, 'Email is empty');
+                              } else if (!emailValidator(
+                                  emailController.text)) {
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                SnackBarWidget.errorSnackBar(
+                                    context, 'Email is invalid');
+                              } else if (passwordController
+                                      .text.isNotEmpty &&
+                                  !passwordValidator(
+                                      passwordController.text)) {
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                SnackBarWidget.errorSnackBar(
+                                    context, 'Password is invalid');
+                              } else {
+                                context.read<MyAccountBloc>().add(
+                                    SaveButtonPressed(
+                                        user: UserModel(
+                                            id: widget.user.id,
+                                            username:
+                                                widget.user.username,
+                                            firstName:
+                                                firstNameController.text,
+                                            lastName:
+                                                lastNameController.text,
+                                            email: emailController.text,
+                                            password:
+                                                passwordController.text,
+                                            role: widget.user.role)));
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                                minimumSize: Size(_size.width * 0.3, 40),
+                                backgroundColor: AppColors.kBlue,
+                                elevation: 0),
+                            child: Text(
+                              'Save',
+                              style: AppTextTheme.kBody1(
+                                  color: AppColors.kWhite),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),

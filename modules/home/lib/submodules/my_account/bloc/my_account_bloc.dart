@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:commons/commons.dart';
+import 'package:commons_dependencies/commons_dependencies.dart';
 import 'package:flutter/material.dart';
 import 'package:home/data/providers/home_api_provider.dart';
 
@@ -31,5 +32,17 @@ class MyAccountBloc extends Bloc<MyAccountEvent, MyAccountState> {
         emit(MyAccountFailure());
       }
     });
+
+    on<DeleteButtonPressed>((event, emit) async {
+      emit(MyAccountLoading());
+      final jwtToken = await _cacheProvider.jwtToken;
+      final response =  await _homeApiProvider.deleteUser(event.username, jwtToken);
+      if (response.statusCode == 200) {
+        await _cacheProvider.clear();
+        emit(RedirectToLogin());
+      } else {
+        emit(MyAccountFailure());
+      }
+    },);
   }
 }

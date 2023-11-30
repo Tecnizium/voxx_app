@@ -3,6 +3,7 @@ import 'package:commons_dependencies/commons_dependencies.dart';
 import 'package:core/submodules/splash/bloc/splash_bloc.dart';
 import 'package:core/routes/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -12,6 +13,16 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+
+  @override
+  void initState() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: AppColors.kBlue,
+      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
+    ));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
