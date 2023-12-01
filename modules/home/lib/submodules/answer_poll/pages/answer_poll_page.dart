@@ -35,7 +35,9 @@ class _AnswerPollPageState extends State<AnswerPollPage> {
             context.pop();
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
             SnackBarWidget.errorSnackBar(
-                context, (state as SignInError).message,);
+              context,
+              (state as SignInError).message,
+            );
             break;
           default:
         }
@@ -115,11 +117,13 @@ class _AnswerPollPageItemWidgetState extends State<AnswerPollPageItemWidget> {
         // TODO: implement listener
       },
       builder: (context, state) {
-        return Center(
+        return SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(20),
+            margin: EdgeInsets.symmetric(
+                vertical: widget._size.height * 0.025,
+                horizontal: widget._size.width * 0.025),
             width: widget._size.width * 0.9,
-            height: widget._size.height * 0.8,
             decoration: BoxDecoration(
                 color: AppColors.kWhite,
                 borderRadius: BorderRadius.circular(10)),
@@ -168,7 +172,7 @@ class _AnswerPollPageItemWidgetState extends State<AnswerPollPageItemWidget> {
                   ),
                   itemCount: widget.question.options.length,
                 ),
-                const Spacer(),
+                const SizedBox(height: 20,),
                 Row(
                   mainAxisAlignment: widget.index != 0
                       ? MainAxisAlignment.spaceBetween
